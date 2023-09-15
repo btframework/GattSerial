@@ -114,8 +114,6 @@ BOOL CGettSerialClientDlg::OnInitDialog()
 
 	edValue.SetWindowText(_T("11223344"));
 
-	Closing = false;
-
 	__hook(&CwclBluetoothLeBeaconWatcher::OnStarted, &Watcher, &CGettSerialClientDlg::WatcherStarted);
 	__hook(&CwclBluetoothLeBeaconWatcher::OnStopped, &Watcher, &CGettSerialClientDlg::WatcherStopped);
 	__hook(&CwclBluetoothLeBeaconWatcher::OnAdvertisementUuidFrame, &Watcher, &CGettSerialClientDlg::WatcherAdvertisementUuidFrame);
@@ -188,7 +186,6 @@ void CGettSerialClientDlg::OnBnClickedButtonConnect()
 		AfxMessageBox(_T("Already connected"));
 	else
 	{
-		Closing = false;
 		btConnect.EnableWindow(FALSE);
 		btDisconnect.EnableWindow(TRUE);
 		
@@ -263,7 +260,6 @@ void CGettSerialClientDlg::OnDestroy()
 {
 	CDialog::OnDestroy();
 
-	Closing = true;
 	Manager.Close();
 
 	__unhook(&Watcher);
@@ -290,18 +286,14 @@ void CGettSerialClientDlg::OnBnClickedButtonDisconnect()
 	if (!Manager.Active)
 		AfxMessageBox(_T("Not connected"));
 	else
-	{
-		Closing = true;
 		Manager.Close();
-	}
 }
 
 void CGettSerialClientDlg::ClientDisconnect(void* Sender,
 	const int Reason)
 {
 	Trace(_T("Client disconnected"), Reason);
-	if (!Closing)
-		Manager.Close();
+	Manager.Close();
 }
 
 void CGettSerialClientDlg::ClientMaxPduSizeChanged(void* Sender)

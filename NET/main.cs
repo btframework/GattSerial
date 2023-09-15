@@ -17,7 +17,6 @@ namespace GattSerialClient
         private wclGattClient Client;
         private wclBluetoothLeBeaconWatcher Watcher;
 
-        private Boolean FClosing;
         private wclGattCharacteristic FTxChar;
 
         private static Guid SERIAL_SERVICE_UUID = new Guid("{6E40FEC1-B5A3-F393-E0A9-E50E24DCCA9E}");
@@ -58,7 +57,6 @@ namespace GattSerialClient
                 MessageBox.Show("Already connected");
             else
             {
-                FClosing = false;
                 btConnect.Enabled = false;
                 btDisconnect.Enabled = true;
 
@@ -103,8 +101,6 @@ namespace GattSerialClient
             Watcher.OnStarted += new EventHandler(Watcher_OnStarted);
             Watcher.OnStopped += new EventHandler(Watcher_OnStopped);
             Watcher.OnAdvertisementUuidFrame += new wclBluetoothLeAdvertisementUuidFrameEvent(Watcher_OnAdvertisementUuidFrame);
-            
-            FClosing = false;
         }
 
         void Client_OnCharacteristicChanged(Object Sender, UInt16 Handle, Byte[] Value)
@@ -195,8 +191,7 @@ namespace GattSerialClient
         void Client_OnDisconnect(Object Sender, Int32 Reason)
         {
             Trace("Client disconnected", Reason);
-            if (!FClosing)
-                Manager.Close();
+            Manager.Close();
         }
 
         void Manager_OnClosed(object sender, EventArgs e)
@@ -250,15 +245,11 @@ namespace GattSerialClient
             if (!Manager.Active)
                 MessageBox.Show("Not connected");
             else
-            {
-                FClosing = true;
                 Manager.Close();
-            }
         }
 
         private void fmMain_FormClosed(Object sender, FormClosedEventArgs e)
         {
-            FClosing = true;
             Manager.Close();
         }
 

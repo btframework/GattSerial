@@ -36,10 +36,8 @@ type
     procedure wclGattClientCharacteristicChanged(Sender: TObject;
       const Handle: Word; const Value: TwclGattCharacteristicValue);
     procedure btSendClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
 
   private
-    FClosing: Boolean;
     FTxChar: TwclGattCharacteristic;
 
     procedure Trace(const Str: string); overload;
@@ -86,7 +84,6 @@ begin
     ShowMessage('Already connected')
 
   else begin
-    FClosing := False;
     btConnect.Enabled := False;
     btDisconnect.Enabled := True;
 
@@ -177,16 +174,12 @@ procedure TfmMain.btDisconnectClick(Sender: TObject);
 begin
   if not wclBluetoothManager.Active then
     ShowMessage('Not connected')
-
-  else begin
-    FClosing := True;
+  else
     wclBluetoothManager.Close;
-  end;
 end;
 
 procedure TfmMain.FormDestroy(Sender: TObject);
 begin
-  FClosing := True;
   wclBluetoothManager.Close;
 end;
 
@@ -194,8 +187,7 @@ procedure TfmMain.wclGattClientDisconnect(Sender: TObject;
   const Reason: Integer);
 begin
   Trace('Client disconnected', Reason);
-  if not FClosing then
-    wclBluetoothManager.Close;
+  wclBluetoothManager.Close;
 end;
 
 procedure TfmMain.wclGattClientMaxPduSizeChanged(Sender: TObject);
@@ -322,11 +314,6 @@ begin
         Trace('Sent');
     end;
   end;
-end;
-
-procedure TfmMain.FormCreate(Sender: TObject);
-begin
-  FClosing := False;
 end;
 
 end.

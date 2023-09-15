@@ -56,7 +56,6 @@ private:
 	CHexEdit edValue;
 	CListBox lbLog;
 
-	bool Closing;
 	wclGattCharacteristic TxChar;
 
 	CwclBluetoothManager Manager;
